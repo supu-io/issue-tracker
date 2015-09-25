@@ -7,7 +7,8 @@ import (
 
 // Internal representation of an issue
 type Issue struct {
-	ID       string `json:"issue"`
+	ID       string `json:"id"`
+	Number   int    `json:"number"`
 	Status   string `json:"status"`
 	Title    string `json:"title,omitempty"`
 	Body     string `json:"body,omitempty"`
@@ -15,6 +16,7 @@ type Issue struct {
 	Comments int    `json:"comments,omitempty"`
 	URL      string `json:"url,omitempty"`
 	Repo     string `json:"repo"`
+	Owner    string `json:"rpo"`
 }
 
 // Get the json representation for an issue

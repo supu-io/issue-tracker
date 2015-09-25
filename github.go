@@ -12,18 +12,19 @@ import (
 type Github struct {
 	Token  string `json:"token"`
 	Org    string `json:"org"`
+	Labels []string
 	client *github.Client
 }
 
 // Setup the client for github
 func (t *Github) setup() {
-	// t.client = github.NewClient(nil)
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: t.Token},
 	)
 	tc := oauth2.NewClient(oauth2.NoContext, ts)
 
 	t.client = github.NewClient(tc)
+	t.Labels = []string{"todo", "doing", "review", "uat", "done"}
 }
 
 // Get a list of issues for a given status
@@ -51,8 +52,16 @@ func (t *Github) Details(id string) *Issue {
 }
 
 // Updates an issue by id
-func (t *Github) Update(id string, issue *Issue) {
-	// func (s *IssuesService) AddLabelsToIssue(owner string, repo string, number int, labels []string) ([]Label, *Response, error)
+func (t *Github) Update(i *Issue) []string {
+	for _, status := range t.Labels {
+		t.client.Issues.RemoveLabelForIssue(i.Owner, i.Repo, i.Number, status)
+	}
+	labels, _, _ := t.client.Issues.AddLabelsToIssue(i.Owner, i.Repo, i.Number, []string{i.Status})
+	ls := make([]string, len(labels))
+	for index, label := range labels {
+		ls[index] = *label.Name
+	}
+	return ls
 }
 
 // Adds a comment on an issue
@@ -62,6 +71,7 @@ func (t *Github) Comment(id string, body string) {
 func (t *Github) exportIssue(gi *github.Issue) *Issue {
 	i := Issue{}
 	i.ID = strconv.Itoa(*gi.Number)
+	i.Number = *gi.Number
 	i.Title = *gi.Title
 	i.Body = *gi.Body
 	// i.Assignee = *gi.Assignee.Name
@@ -69,10 +79,8 @@ func (t *Github) exportIssue(gi *github.Issue) *Issue {
 	i.Comments = *gi.Comments
 	i.URL = *gi.HTMLURL
 
-	statuses := []string{"todo", "doing", "review", "uat", "done"}
-
 	for _, label := range gi.Labels {
-		for _, status := range statuses {
+		for _, status := range t.Labels {
 			if *label.Name == status {
 				i.Status = status
 			}
