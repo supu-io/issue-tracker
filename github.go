@@ -39,16 +39,22 @@ func (t *Github) List(status string) *Issues {
 
 	issues := make(Issues, len(githubIssues))
 	for i, issue := range githubIssues {
-		issues[i] = t.exportIssue(&issue)
+		issues[i] = t.mapIssue(&issue)
 	}
 
 	return &issues
 }
 
 // Gets issue details for the given issue id
-func (t *Github) Details(id string) *Issue {
-	// func (s *IssuesService) Get(owner string, repo string, number int) (*Issue, *Response, error)
-	return &Issue{}
+func (t *Github) Details(i *Issue) *Issue {
+	gIssue, _, _ := t.client.Issues.Get(i.Owner, i.Repo, i.Number)
+	opt := github.IssueListCommentsOptions{}
+	gComments, _, _ := t.client.Issues.ListComments(i.Owner, i.Repo, i.Number, &opt)
+
+	issue := t.mapIssue(gIssue)
+	issue.Comments = t.mapComments(&gComments)
+
+	return issue
 }
 
 // Updates an issue by id
@@ -68,16 +74,30 @@ func (t *Github) Update(i *Issue) []string {
 func (t *Github) Comment(id string, body string) {
 }
 
-func (t *Github) exportIssue(gi *github.Issue) *Issue {
+func (t *Github) mapIssue(gi *github.Issue) *Issue {
 	i := Issue{}
-	i.ID = strconv.Itoa(*gi.Number)
-	i.Number = *gi.Number
-	i.Title = *gi.Title
-	i.Body = *gi.Body
+	if gi.Number != nil {
+		i.ID = strconv.Itoa(*gi.Number)
+	}
+	if gi.Number != nil {
+		i.Number = *gi.Number
+	}
+	if gi.Title != nil {
+		i.Title = *gi.Title
+	}
+	if gi.Body != nil {
+		i.Body = *gi.Body
+	}
+
 	// i.Assignee = *gi.Assignee.Name
-	i.Repo = t.getRepoFromURL(*gi.URL)
-	i.Comments = *gi.Comments
-	i.URL = *gi.HTMLURL
+	if gi.URL != nil {
+		i.Repo = t.getRepoFromURL(*gi.URL)
+	}
+	if gi.HTMLURL != nil {
+		i.URL = *gi.HTMLURL
+	}
+
+	// TODO: Map extra fields
 
 	for _, label := range gi.Labels {
 		for _, status := range t.Labels {
@@ -88,6 +108,38 @@ func (t *Github) exportIssue(gi *github.Issue) *Issue {
 	}
 
 	return &i
+}
+
+func (t *Github) mapComments(gComments *[]github.IssueComment) []Comment {
+	comments := make([]Comment, len(*gComments))
+
+	for index, gc := range *gComments {
+		if gc.ID != nil {
+			comments[index].ID = *gc.ID
+		}
+		if gc.Body != nil {
+			comments[index].Body = *gc.Body
+		}
+		if gc.User != nil {
+			comments[index].User = *gc.User.Name
+		}
+		if gc.URL != nil {
+			comments[index].URL = *gc.URL
+		}
+		if gc.CreatedAt != nil {
+			comments[index].CreatedAt = *gc.CreatedAt
+		}
+		if gc.UpdatedAt != nil {
+			comments[index].UpdatedAt = *gc.UpdatedAt
+		}
+		if gc.HTMLURL != nil {
+			comments[index].HTMLURL = *gc.HTMLURL
+		}
+		if gc.IssueURL != nil {
+			comments[index].IssueURL = *gc.IssueURL
+		}
+	}
+	return comments
 }
 
 func (t *Github) getRepoFromURL(url string) string {

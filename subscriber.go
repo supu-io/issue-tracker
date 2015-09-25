@@ -21,6 +21,15 @@ func (s *Subscriber) Subscribe() {
 		nc.Publish(m.Reply, *issues.toJSON())
 	})
 
+	nc.Subscribe("issues.details", func(m *nats.Msg) {
+		issue := s.issuesDetails(m.Data)
+		nc.Publish(m.Reply, *issue.toJSON())
+	})
+
+	nc.Subscribe("issues.update", func(m *nats.Msg) {
+		issues := s.issuesUpdate(m.Data)
+		nc.Publish(m.Reply, *issues.toJSON())
+	})
 	runtime.Goexit()
 }
 
@@ -37,5 +46,34 @@ func (s *Subscriber) issuesList(body []byte) Issues {
 	issues := g.List(input.Status)
 
 	return *issues
+}
 
+func (s *Subscriber) issuesDetails(body []byte) *Issue {
+	input := IssuesDetails{}
+	err := json.Unmarshal(body, &input)
+	if err != nil {
+		log.Println(err)
+	}
+
+	g := input.Config.Github
+	g.setup()
+	issue := input.toIssue()
+	g.Details(issue)
+
+	return issue
+}
+
+func (s *Subscriber) issuesUpdate(body []byte) *Issue {
+	input := IssuesDetails{}
+	err := json.Unmarshal(body, &input)
+	if err != nil {
+		log.Println(err)
+	}
+
+	g := input.Config.Github
+	g.setup()
+	issue := input.toIssue()
+	g.Update(issue)
+
+	return issue
 }

@@ -32,9 +32,6 @@ func TestIssuesService_ListByOrg(t *testing.T) {
 	if issue.Body != "body" {
 		t.Errorf("Issue body is not successfully mapped")
 	}
-	if issue.Comments != 0 {
-		t.Errorf("Issue comments is not successfully mapped")
-	}
 	if issue.URL != "http://supu.io" {
 		t.Errorf("Issue url is not successfully mapped")
 	}
