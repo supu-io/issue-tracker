@@ -5,6 +5,7 @@ import (
 	"golang.org/x/oauth2"
 	"log"
 	"strconv"
+	"strings"
 )
 
 // Issue tracker for github
@@ -43,13 +44,15 @@ func (t *Github) List(status string) *Issues {
 	return &issues
 }
 
-// Gets issue details for the fiven issue id
+// Gets issue details for the given issue id
 func (t *Github) Details(id string) *Issue {
+	// func (s *IssuesService) Get(owner string, repo string, number int) (*Issue, *Response, error)
 	return &Issue{}
 }
 
 // Updates an issue by id
 func (t *Github) Update(id string, issue *Issue) {
+	// func (s *IssuesService) AddLabelsToIssue(owner string, repo string, number int, labels []string) ([]Label, *Response, error)
 }
 
 // Adds a comment on an issue
@@ -62,6 +65,7 @@ func (t *Github) exportIssue(gi *github.Issue) *Issue {
 	i.Title = *gi.Title
 	i.Body = *gi.Body
 	// i.Assignee = *gi.Assignee.Name
+	i.Repo = t.getRepoFromURL(*gi.URL)
 	i.Comments = *gi.Comments
 	i.URL = *gi.HTMLURL
 
@@ -76,4 +80,10 @@ func (t *Github) exportIssue(gi *github.Issue) *Issue {
 	}
 
 	return &i
+}
+
+func (t *Github) getRepoFromURL(url string) string {
+	// "https://api.github.com/repos/octocat/Hello-World/pulls/1347"
+	parts := strings.Split(url, "/")
+	return parts[4] + "/" + parts[5]
 }

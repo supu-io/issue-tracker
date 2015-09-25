@@ -12,7 +12,7 @@ func TestIssuesService_ListByOrg(t *testing.T) {
 
 	mux.HandleFunc("/orgs/o/issues", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		fmt.Fprint(w, `[{"number":1,"title":"test","body":"body","comments":0,"html_url":"http://supu.io"}]`)
+		fmt.Fprint(w, `[{"number":1,"title":"test","body":"body","comments":0,"html_url":"http://supu.io","url":"https://api.github.com/repos/octocat/Hello-World/pulls/1347"}]`)
 	})
 
 	g := Github{client: client, Org: "o"}
@@ -36,5 +36,8 @@ func TestIssuesService_ListByOrg(t *testing.T) {
 	}
 	if issue.URL != "http://supu.io" {
 		t.Errorf("Issue url is not successfully mapped")
+	}
+	if issue.Repo != "octocat/Hello-World" {
+		t.Errorf("Issue repo is not successfully mapped")
 	}
 }

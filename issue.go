@@ -14,6 +14,7 @@ type Issue struct {
 	Assignee string `json:"assignee,omitempty"`
 	Comments int    `json:"comments,omitempty"`
 	URL      string `json:"url,omitempty"`
+	Repo     string `json:"repo"`
 }
 
 // Get the json representation for an issue
