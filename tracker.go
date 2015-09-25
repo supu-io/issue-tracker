@@ -4,7 +4,7 @@ type Tracker interface {
 	setup()
 
 	// Get a list of issues by status
-	List(status string) *[]*Issue
+	List(status string) *Issues
 
 	// Get issue details
 	Details(id string) *Issue
