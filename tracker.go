@@ -10,7 +10,7 @@ type Tracker interface {
 	Details(id string) *Issue
 
 	// Update an issue
-	Update(id string, issue *Issue)
+	Update(issue *Issue) []string
 
 	// Add a comment on an issue
 	Comment(id string, body string)
