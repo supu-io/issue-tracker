@@ -9,18 +9,16 @@ import (
 
 // Issue tracker for github
 type Github struct {
+	Token  string `json:"token"`
+	Org    string `json:"org"`
 	client *github.Client
 }
 
 // Setup the client for github
 func (t *Github) setup() {
-	t.client = github.NewClient(nil)
-}
-
-// Setup the client for github with an oauth2 token
-func (t *Github) auth(token string) {
+	// t.client = github.NewClient(nil)
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
+		&oauth2.Token{AccessToken: t.Token},
 	)
 	tc := oauth2.NewClient(oauth2.NoContext, ts)
 
@@ -28,15 +26,16 @@ func (t *Github) auth(token string) {
 }
 
 // Get a list of issues for a given status
-func (t *Github) List(status string) *[]*Issue {
-	s := []string{status}
-	options := github.IssueListOptions{Labels: s}
-	githubIssues, _, err := t.client.Issues.ListByOrg("supu-io", &options)
+func (t *Github) List(status string) *Issues {
+	options := github.IssueListOptions{}
+	options.Filter = "all"
+	options.Labels = []string{status}
+	githubIssues, _, err := t.client.Issues.ListByOrg(t.Org, &options)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
-	issues := []*Issue{}
+	issues := make(Issues, len(githubIssues))
 	for i, issue := range githubIssues {
 		issues[i] = t.exportIssue(&issue)
 	}
@@ -59,13 +58,12 @@ func (t *Github) Comment(id string, body string) {
 
 func (t *Github) exportIssue(gi *github.Issue) *Issue {
 	i := Issue{}
-
 	i.ID = strconv.Itoa(*gi.Number)
 	i.Title = *gi.Title
 	i.Body = *gi.Body
-	i.Assignee = *gi.Assignee.Name
+	// i.Assignee = *gi.Assignee.Name
 	i.Comments = *gi.Comments
-	i.URL = *gi.URL
+	i.URL = *gi.HTMLURL
 
 	statuses := []string{"todo", "doing", "review", "uat", "done"}
 
