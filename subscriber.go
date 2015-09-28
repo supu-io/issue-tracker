@@ -43,7 +43,7 @@ func (s *Subscriber) issuesList(body []byte) Issues {
 
 	g := input.Config.Github
 	g.setup()
-	issues := g.List(input.Status)
+	issues := g.List(&input)
 
 	return *issues
 }

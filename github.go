@@ -11,7 +11,6 @@ import (
 // Issue tracker for github
 type Github struct {
 	Token  string `json:"token"`
-	Org    string `json:"org"`
 	Labels []string
 	client *github.Client
 }
@@ -28,11 +27,11 @@ func (t *Github) setup() {
 }
 
 // Get a list of issues for a given status
-func (t *Github) List(status string) *Issues {
+func (t *Github) List(input *IssuesList) *Issues {
 	options := github.IssueListOptions{}
 	options.Filter = "all"
-	options.Labels = []string{status}
-	githubIssues, _, err := t.client.Issues.ListByOrg(t.Org, &options)
+	options.Labels = []string{input.Status}
+	githubIssues, _, err := t.client.Issues.ListByOrg(input.Org, &options)
 	if err != nil {
 		log.Println(err.Error())
 	}

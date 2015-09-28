@@ -17,8 +17,9 @@ func TestIssuesService_ListByOrg(t *testing.T) {
 		fmt.Fprint(w, `[{"number":1,"title":"test","body":"body","comments":0,"html_url":"http://supu.io","url":"https://api.github.com/repos/octocat/Hello-World/pulls/1347"}]`)
 	})
 
-	g := Github{client: client, Org: "o"}
-	issues := *g.List("todo")
+	g := Github{client: client}
+	i := IssuesList{Status: "todo", Org: "o"}
+	issues := *g.List(&i)
 	if len(issues) != 1 {
 		t.Errorf("Issues.List returned %+v, want %+v", len(issues), 1)
 	}
@@ -73,7 +74,7 @@ func TestIssuesService_Update(t *testing.T) {
 		fmt.Fprint(w, `[{"name":"doing"}]`)
 	})
 
-	g := Github{client: client, Org: "o"}
+	g := Github{client: client}
 	issue := Issue{Owner: "o", Repo: "r", Number: 1, Status: "doing"}
 	labels := g.Update(&issue)
 

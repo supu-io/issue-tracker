@@ -62,6 +62,7 @@ type Config struct {
 // Representation for the input event issues.list
 type IssuesList struct {
 	Status string `json:"status"`
+	Org    string `json:"org"`
 	Config `json:"config"`
 }
 
