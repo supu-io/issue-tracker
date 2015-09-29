@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -67,21 +69,17 @@ type IssuesList struct {
 }
 
 type IssuesDetails struct {
-	Owner  string  `json:"owner"`
-	Repo   string  `json:"repo"`
-	Number int     `json:"number"`
-	Status *string `json:"status,omitempty"`
+	ID     string `json:"id"`
 	Config `json:"config"`
 }
 
 func (i *IssuesDetails) toIssue() *Issue {
 	issue := Issue{}
-	issue.Owner = i.Owner
-	issue.Repo = i.Repo
-	issue.Number = i.Number
-	if i.Status != nil {
-		issue.Status = *i.Status
-	}
+	parts := strings.Split(i.ID, "/")
+	issue.Owner = parts[0]
+	issue.Repo = parts[1]
+	number, _ := strconv.Atoi(parts[2])
+	issue.Number = number
 
 	return &issue
 }
