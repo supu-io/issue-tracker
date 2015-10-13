@@ -44,7 +44,9 @@ func (t *Github) getIssuesList(input *IssuesList) []github.Issue {
 	if input.Repo == "" {
 		options := github.IssueListOptions{
 			Filter: "all",
-			Labels: []string{input.Status},
+		}
+		if input.Status != "" {
+			options.Labels = []string{input.Status}
 		}
 		options.Page = 0
 		options.PerPage = 100
@@ -56,8 +58,9 @@ func (t *Github) getIssuesList(input *IssuesList) []github.Issue {
 
 	} else {
 
-		options := github.IssueListByRepoOptions{
-			Labels: []string{input.Status},
+		options := github.IssueListByRepoOptions{}
+		if input.Status != "" {
+			options.Labels = []string{input.Status}
 		}
 		options.Page = 0
 		options.PerPage = 100
