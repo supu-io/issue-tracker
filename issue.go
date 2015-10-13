@@ -65,6 +65,7 @@ type Config struct {
 type IssuesList struct {
 	Status string `json:"status"`
 	Org    string `json:"org"`
+	Repo   string `json:"repo,omitempty"`
 	Config `json:"config"`
 }
 

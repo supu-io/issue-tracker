@@ -28,20 +28,45 @@ func (t *Github) setup() {
 
 // Get a list of issues for a given status
 func (t *Github) List(input *IssuesList) *Issues {
-	options := github.IssueListOptions{}
-	options.Filter = "all"
-	options.Labels = []string{input.Status}
-	githubIssues, _, err := t.client.Issues.ListByOrg(input.Org, &options)
-	if err != nil {
-		log.Println(err.Error())
-	}
+	githubIssues := t.getIssuesList(input)
 
 	issues := make(Issues, len(githubIssues))
+
 	for i, issue := range githubIssues {
 		issues[i] = t.mapIssue(&issue)
 	}
 
 	return &issues
+}
+
+func (t *Github) getIssuesList(input *IssuesList) []github.Issue {
+
+	if input.Repo == "" {
+		options := github.IssueListOptions{
+			Filter: "all",
+			Labels: []string{input.Status},
+		}
+		options.Page = 0
+		options.PerPage = 100
+		githubIssues, _, err := t.client.Issues.ListByOrg(input.Org, &options)
+		if err != nil {
+			log.Println(err.Error())
+		}
+		return githubIssues
+
+	} else {
+
+		options := github.IssueListByRepoOptions{
+			Labels: []string{input.Status},
+		}
+		options.Page = 0
+		options.PerPage = 100
+		githubIssues, _, err := t.client.Issues.ListByRepo(input.Org, input.Repo, &options)
+		if err != nil {
+			log.Println(err.Error())
+		}
+		return githubIssues
+	}
 }
 
 // Gets issue details for the given issue id
