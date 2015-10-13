@@ -27,12 +27,17 @@ func (s *Subscriber) Subscribe() {
 			nc.Publish(m.Reply, *issue.toJSON())
 		} else {
 			nc.Publish(m.Reply, []byte(`{"error":"non existing issue"}`))
+			return
 		}
 	})
 
 	nc.Subscribe("issues.update", func(m *nats.Msg) {
 		issues := s.issuesUpdate(m.Data)
 		nc.Publish(m.Reply, *issues.toJSON())
+	})
+
+	nc.Subscribe("issue-tracker.setup", func(m *nats.Msg) {
+		s.setup(nc, m)
 	})
 	runtime.Goexit()
 }
@@ -82,4 +87,26 @@ func (s *Subscriber) issuesUpdate(body []byte) *Issue {
 	g.Update(issue)
 
 	return issue
+}
+
+func (s *Subscriber) setup(nc *nats.Conn, m *nats.Msg) {
+	type SetupMsg struct {
+		Org    string   `json:"org"`
+		Repo   string   `json:"repo"`
+		Labels []string `json:"states"`
+		Config `json:"config"`
+	}
+	body := m.Data
+	input := SetupMsg{}
+	err := json.Unmarshal(body, &input)
+	if err != nil {
+		nc, _ := nats.Connect(nats.DefaultURL)
+		nc.Publish(m.Reply, []byte(`{"error":"error setting up github labels"}`))
+		return
+	}
+	g := input.Config.Github
+	g.setup()
+	g.Labels = input.Labels
+	g.Setup(input.Labels, input.Org, input.Repo)
+	nc.Publish(m.Reply, []byte(`success`))
 }

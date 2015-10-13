@@ -23,6 +23,7 @@ func (t *Github) setup() {
 	tc := oauth2.NewClient(oauth2.NoContext, ts)
 
 	t.client = github.NewClient(tc)
+	// TODO : Move this hardcoded stuff to api
 	t.Labels = []string{"todo", "doing", "review", "uat", "done"}
 }
 
@@ -98,6 +99,17 @@ func (t *Github) Update(i *Issue) []string {
 		ls[index] = *label.Name
 	}
 	return ls
+}
+
+// Setup github labels to support active workflow
+func (t *Github) Setup(labels []string, owner string, repo string) {
+	for _, status := range labels {
+		l := github.Label{
+			URL:  &status,
+			Name: &status,
+		}
+		t.client.Issues.CreateLabel(owner, repo, &l)
+	}
 }
 
 // Comment on an issue
