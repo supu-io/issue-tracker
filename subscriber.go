@@ -23,7 +23,11 @@ func (s *Subscriber) Subscribe() {
 
 	nc.Subscribe("issues.details", func(m *nats.Msg) {
 		issue := s.issuesDetails(m.Data)
-		nc.Publish(m.Reply, *issue.toJSON())
+		if issue != nil {
+			nc.Publish(m.Reply, *issue.toJSON())
+		} else {
+			nc.Publish(m.Reply, []byte(`{"error":"non existing issue"}`))
+		}
 	})
 
 	nc.Subscribe("issues.update", func(m *nats.Msg) {

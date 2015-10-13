@@ -51,7 +51,9 @@ func (t *Github) Details(i *Issue) *Issue {
 	gComments, _, _ := t.client.Issues.ListComments(i.Owner, i.Repo, i.Number, &opt)
 
 	issue := t.mapIssue(gIssue)
-	issue.Comments = t.mapComments(&gComments)
+	if issue != nil {
+		issue.Comments = t.mapComments(&gComments)
+	}
 
 	return issue
 }
