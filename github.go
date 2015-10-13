@@ -61,7 +61,10 @@ func (t *Github) Details(i *Issue) *Issue {
 // Updates an issue by id
 func (t *Github) Update(i *Issue) []string {
 	for _, status := range t.Labels {
-		t.client.Issues.RemoveLabelForIssue(i.Owner, i.Repo, i.Number, status)
+		_, err := t.client.Issues.RemoveLabelForIssue(i.Owner, i.Repo, i.Number, status)
+		if err != nil {
+			println(err.Error())
+		}
 	}
 	labels, _, _ := t.client.Issues.AddLabelsToIssue(i.Owner, i.Repo, i.Number, []string{i.Status})
 	ls := make([]string, len(labels))

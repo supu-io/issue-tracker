@@ -70,15 +70,17 @@ type IssuesList struct {
 
 type IssuesDetails struct {
 	ID     string `json:"id"`
+	Status string `json:"status"`
 	Config `json:"config"`
 }
 
 func (i *IssuesDetails) toIssue() *Issue {
 	issue := Issue{}
 	parts := strings.Split(i.ID, "/")
-	issue.Owner = parts[0]
-	issue.Repo = parts[1]
-	number, _ := strconv.Atoi(parts[2])
+	issue.Owner = parts[1]
+	issue.Repo = parts[2]
+	issue.Status = i.Status
+	number, _ := strconv.Atoi(parts[3])
 	issue.Number = number
 
 	return &issue
