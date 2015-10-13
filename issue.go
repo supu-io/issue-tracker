@@ -81,10 +81,10 @@ func (i *IssuesDetails) toIssue() *Issue {
 		return nil
 	}
 	parts := strings.Split(i.ID, "/")
-	issue.Owner = parts[1]
-	issue.Repo = parts[2]
+	issue.Owner = parts[0]
+	issue.Repo = parts[1]
 	issue.Status = i.Status
-	number, _ := strconv.Atoi(parts[3])
+	number, _ := strconv.Atoi(parts[2])
 	issue.Number = number
 
 	return &issue

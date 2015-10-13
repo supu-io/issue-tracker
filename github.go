@@ -120,10 +120,11 @@ func (t *Github) mapIssue(gi *github.Issue) *Issue {
 	if gi.Body != nil {
 		i.Body = *gi.Body
 	}
-
-	// i.Assignee = *gi.Assignee.Name
 	if gi.URL != nil {
-		i.Repo = t.getRepoFromURL(*gi.URL)
+		repo := t.getRepoFromURL(*gi.URL)
+		parts := strings.Split(repo, "/")
+		i.Repo = parts[1]
+		i.Owner = parts[0]
 	}
 	if gi.HTMLURL != nil {
 		i.URL = *gi.HTMLURL
