@@ -1,5 +1,6 @@
 package main
 
+// Tracker interface
 type Tracker interface {
 	setup()
 

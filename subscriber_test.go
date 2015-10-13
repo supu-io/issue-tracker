@@ -36,7 +36,10 @@ func TestIssuesService_ListByOrg(t *testing.T) {
 	if issue.URL != "http://supu.io" {
 		t.Errorf("Issue url is not successfully mapped")
 	}
-	if issue.Repo != "octocat/Hello-World" {
+	if issue.Owner != "octocat" {
+		t.Errorf("Issue owner is not successfully mapped")
+	}
+	if issue.Repo != "Hello-World" {
 		t.Errorf("Issue repo is not successfully mapped")
 	}
 }

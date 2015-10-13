@@ -7,10 +7,10 @@ import (
 	"runtime"
 )
 
-// Collection of methods to subscribe the different events
+// Subscriber : collection of methods to subscribe the different events
 type Subscriber struct{}
 
-// Manages the subscriptions to different events.
+// Subscribe to all events
 func (s *Subscriber) Subscribe() {
 
 	log.Println("Listening...")

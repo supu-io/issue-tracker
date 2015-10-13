@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Issue tracker for github
+// Github issue tracker
 type Github struct {
 	Token  string `json:"token"`
 	Labels []string
@@ -26,7 +26,7 @@ func (t *Github) setup() {
 	t.Labels = []string{"todo", "doing", "review", "uat", "done"}
 }
 
-// Get a list of issues for a given status
+// List of issues for a given status
 func (t *Github) List(input *IssuesList) *Issues {
 	githubIssues := t.getIssuesList(input)
 
@@ -55,24 +55,22 @@ func (t *Github) getIssuesList(input *IssuesList) []github.Issue {
 			log.Println(err.Error())
 		}
 		return githubIssues
-
-	} else {
-
-		options := github.IssueListByRepoOptions{}
-		if input.Status != "" {
-			options.Labels = []string{input.Status}
-		}
-		options.Page = 0
-		options.PerPage = 100
-		githubIssues, _, err := t.client.Issues.ListByRepo(input.Org, input.Repo, &options)
-		if err != nil {
-			log.Println(err.Error())
-		}
-		return githubIssues
 	}
+
+	options := github.IssueListByRepoOptions{}
+	if input.Status != "" {
+		options.Labels = []string{input.Status}
+	}
+	options.Page = 0
+	options.PerPage = 100
+	githubIssues, _, err := t.client.Issues.ListByRepo(input.Org, input.Repo, &options)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	return githubIssues
 }
 
-// Gets issue details for the given issue id
+// Details for an issue for the given issue id
 func (t *Github) Details(i *Issue) *Issue {
 	gIssue, _, _ := t.client.Issues.Get(i.Owner, i.Repo, i.Number)
 	opt := github.IssueListCommentsOptions{}
@@ -86,7 +84,7 @@ func (t *Github) Details(i *Issue) *Issue {
 	return issue
 }
 
-// Updates an issue by id
+// Update an issue by id
 func (t *Github) Update(i *Issue) []string {
 	for _, status := range t.Labels {
 		_, err := t.client.Issues.RemoveLabelForIssue(i.Owner, i.Repo, i.Number, status)
@@ -102,7 +100,7 @@ func (t *Github) Update(i *Issue) []string {
 	return ls
 }
 
-// Adds a comment on an issue
+// Comment on an issue
 func (t *Github) Comment(id string, body string) {
 }
 

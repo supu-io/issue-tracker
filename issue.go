@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Internal representation of an issue
+// Issue Internal representation
 type Issue struct {
 	ID       string    `json:"id"`
 	Number   int       `json:"number"`
@@ -21,8 +21,11 @@ type Issue struct {
 	Repo     string    `json:"repo"`
 	Owner    string    `json:"owner"`
 }
+
+// Comments of an issue
 type Comments []Comment
 
+// Comment ...
 type Comment struct {
 	ID        int       `json:"id,omitempty"`
 	Body      string    `json:"body,omitempty"`
@@ -43,7 +46,7 @@ func (i *Issue) toJSON() *[]byte {
 	return &json
 }
 
-// A collection of issues
+// Issues collection
 type Issues []*Issue
 
 // Get the json representation for a collection of issues
@@ -55,13 +58,12 @@ func (i *Issues) toJSON() *[]byte {
 	return &json
 }
 
-// This config needs to be received on any input
-// event
+// Config ...
 type Config struct {
 	Github *Github `json:"github, omitempty"`
 }
 
-// Representation for the input event issues.list
+// IssuesList Representation
 type IssuesList struct {
 	Status string `json:"status"`
 	Org    string `json:"org"`
@@ -69,6 +71,7 @@ type IssuesList struct {
 	Config `json:"config"`
 }
 
+// IssuesDetails ...
 type IssuesDetails struct {
 	ID     string `json:"id"`
 	Status string `json:"status"`
