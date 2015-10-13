@@ -62,9 +62,11 @@ func (s *Subscriber) issuesDetails(body []byte) *Issue {
 	g := input.Config.Github
 	g.setup()
 	issue := input.toIssue()
-	i := g.Details(issue)
+	if issue == nil {
+		return nil
+	}
 
-	return i
+	return g.Details(issue)
 }
 
 func (s *Subscriber) issuesUpdate(body []byte) *Issue {

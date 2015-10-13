@@ -77,6 +77,9 @@ type IssuesDetails struct {
 
 func (i *IssuesDetails) toIssue() *Issue {
 	issue := Issue{}
+	if strings.Contains(i.ID, "/") == false {
+		return nil
+	}
 	parts := strings.Split(i.ID, "/")
 	issue.Owner = parts[1]
 	issue.Repo = parts[2]
