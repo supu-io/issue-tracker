@@ -101,7 +101,7 @@ func (t *Github) Create(i *Issue) *Issue {
 	}
 
 	i.Number = *gi.Number
-	i.URL = *gi.URL
+	i.URL = *gi.HTMLURL
 
 	return i
 }
