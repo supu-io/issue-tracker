@@ -36,6 +36,11 @@ func (s *Subscriber) Subscribe() {
 		nc.Publish(m.Reply, *issues.toJSON())
 	})
 
+	nc.Subscribe("issues.create", func(m *nats.Msg) {
+		res := s.issuesCreate(m.Data)
+		nc.Publish(m.Reply, *res.toJSON())
+	})
+
 	nc.Subscribe("issue-tracker.setup", func(m *nats.Msg) {
 		s.setup(nc, m)
 	})
@@ -72,6 +77,20 @@ func (s *Subscriber) issuesDetails(body []byte) *Issue {
 	}
 
 	return g.Details(issue)
+}
+
+func (s *Subscriber) issuesCreate(body []byte) *Issue {
+	input := IssuesCreate{}
+	err := json.Unmarshal(body, &input)
+	if err != nil {
+		log.Println(err)
+	}
+
+	g := input.Config.Github
+	g.setup()
+	issue := input.Issue
+
+	return g.Create(issue)
 }
 
 func (s *Subscriber) issuesUpdate(body []byte) *Issue {

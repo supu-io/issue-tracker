@@ -24,7 +24,7 @@ func (t *Github) setup() {
 
 	t.client = github.NewClient(tc)
 	// TODO : Move this hardcoded stuff to api
-	t.Labels = []string{"todo", "doing", "review", "uat", "done"}
+	t.Labels = []string{"created", "todo", "doing", "review", "uat", "done"}
 }
 
 // List of issues for a given status
@@ -85,6 +85,27 @@ func (t *Github) Details(i *Issue) *Issue {
 	return issue
 }
 
+// Details for an issue for the given issue id
+func (t *Github) Create(i *Issue) *Issue {
+	// TODO default label must be provided
+	ir := github.IssueRequest{
+		Title:  &i.Title,
+		Body:   &i.Body,
+		Labels: &[]string{"created"},
+	}
+
+	gi, _, err := t.client.Issues.Create(i.Owner, i.Repo, &ir)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	i.Number = *gi.Number
+	i.URL = *gi.URL
+
+	return i
+}
+
 // Update an issue by id
 func (t *Github) Update(i *Issue) []string {
 	for _, status := range t.Labels {
@@ -118,6 +139,9 @@ func (t *Github) Comment(id string, body string) {
 
 func (t *Github) mapIssue(gi *github.Issue) *Issue {
 	i := Issue{}
+	if gi == nil {
+		return nil
+	}
 	if gi.Number != nil {
 		i.ID = strconv.Itoa(*gi.Number)
 	}
