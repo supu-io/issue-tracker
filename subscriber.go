@@ -51,14 +51,13 @@ func (s *Subscriber) Subscribe() {
 
 // Manages an issues.list event
 func (s *Subscriber) issuesList(body []byte) Issues {
-	input := IssuesList{}
+	input := messages.GetIssuesList{}
 	err := json.Unmarshal(body, &input)
 	if err != nil {
 		log.Println(err)
 	}
 
-	g := input.Config.Github
-	g.setup()
+	g := getAdapter(input.Config)
 	issues := g.List(&input)
 
 	return *issues
@@ -71,10 +70,7 @@ func (s *Subscriber) issuesDetails(body []byte) *Issue {
 		log.Println(err)
 	}
 
-	g := Github{
-		Token: input.Config.Github.Token,
-	}
-	g.setup()
+	g := getAdapter(input.Config)
 	issue := input.Issue
 
 	return g.Details(&issue)
@@ -129,4 +125,13 @@ func (s *Subscriber) setup(nc *nats.Conn, m *nats.Msg) {
 	g.Labels = input.Labels
 	g.Setup(input.Labels, input.Org, input.Repo)
 	nc.Publish(m.Reply, []byte(`success`))
+}
+
+func getAdapter(config messages.Config) *Github {
+	g := Github{
+		Token: config.Github.Token,
+	}
+	g.setup()
+
+	return &g
 }

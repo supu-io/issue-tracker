@@ -30,7 +30,7 @@ func (t *Github) setup() {
 }
 
 // List of issues for a given status
-func (t *Github) List(input *IssuesList) *Issues {
+func (t *Github) List(input *messages.GetIssuesList) *Issues {
 	githubIssues := t.getIssuesList(input)
 
 	issues := make(Issues, len(githubIssues))
@@ -42,7 +42,7 @@ func (t *Github) List(input *IssuesList) *Issues {
 	return &issues
 }
 
-func (t *Github) getIssuesList(input *IssuesList) []github.Issue {
+func (t *Github) getIssuesList(input *messages.GetIssuesList) []github.Issue {
 
 	if input.Repo == "" {
 		options := github.IssueListOptions{
