@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/nats-io/nats"
 	"log"
 	"runtime"
+
+	"github.com/nats-io/nats"
+	"github.com/supu-io/messages"
 )
 
 // Subscriber : collection of methods to subscribe the different events
@@ -63,20 +65,19 @@ func (s *Subscriber) issuesList(body []byte) Issues {
 }
 
 func (s *Subscriber) issuesDetails(body []byte) *Issue {
-	input := IssuesDetails{}
+	input := messages.GetIssue{}
 	err := json.Unmarshal(body, &input)
 	if err != nil {
 		log.Println(err)
 	}
 
-	g := input.Config.Github
-	g.setup()
-	issue := input.toIssue()
-	if issue == nil {
-		return nil
+	g := Github{
+		Token: input.Config.Github.Token,
 	}
+	g.setup()
+	issue := input.Issue
 
-	return g.Details(issue)
+	return g.Details(&issue)
 }
 
 func (s *Subscriber) issuesCreate(body []byte) *Issue {

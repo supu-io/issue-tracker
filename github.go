@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/google/go-github/github"
+	"github.com/supu-io/messages"
+	"golang.org/x/oauth2"
 )
 
 // Github issue tracker
@@ -72,10 +74,10 @@ func (t *Github) getIssuesList(input *IssuesList) []github.Issue {
 }
 
 // Details for an issue for the given issue id
-func (t *Github) Details(i *Issue) *Issue {
-	gIssue, _, _ := t.client.Issues.Get(i.Owner, i.Repo, i.Number)
+func (t *Github) Details(i *messages.Issue) *Issue {
+	gIssue, _, _ := t.client.Issues.Get(i.Org, i.Repo, i.Number)
 	opt := github.IssueListCommentsOptions{}
-	gComments, _, _ := t.client.Issues.ListComments(i.Owner, i.Repo, i.Number, &opt)
+	gComments, _, _ := t.client.Issues.ListComments(i.Org, i.Repo, i.Number, &opt)
 
 	issue := t.mapIssue(gIssue)
 	if issue != nil {
