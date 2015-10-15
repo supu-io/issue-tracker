@@ -87,7 +87,7 @@ func (t *Github) Details(i *messages.Issue) *Issue {
 	return issue
 }
 
-// Details for an issue for the given issue id
+// Create an issue
 func (t *Github) Create(i *Issue) *Issue {
 	// TODO default label must be provided
 	ir := github.IssueRequest{

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/supu-io/messages"
 )
 
 func TestIssuesService_ListByOrg(t *testing.T) {
@@ -18,7 +20,7 @@ func TestIssuesService_ListByOrg(t *testing.T) {
 	})
 
 	g := Github{client: client}
-	i := IssuesList{Status: "todo", Org: "o"}
+	i := messages.GetIssuesList{Status: "todo", Org: "o"}
 	issues := *g.List(&i)
 	if len(issues) != 1 {
 		t.Errorf("Issues.List returned %+v, want %+v", len(issues), 1)

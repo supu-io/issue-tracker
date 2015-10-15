@@ -93,6 +93,7 @@ func (i *IssuesDetails) toIssue() *Issue {
 	return &issue
 }
 
+// IssuesCreate ...
 type IssuesCreate struct {
 	Issue  *Issue `json:issue`
 	Config `json:"config"`

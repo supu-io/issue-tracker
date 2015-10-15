@@ -73,7 +73,7 @@ func (s *Subscriber) issuesDetails(body []byte) *Issue {
 	g := getAdapter(input.Config)
 	issue := input.Issue
 
-	return g.Details(&issue)
+	return g.Details(issue)
 }
 
 func (s *Subscriber) issuesCreate(body []byte) *Issue {
