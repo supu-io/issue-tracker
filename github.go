@@ -88,7 +88,7 @@ func (t *Github) Details(i *messages.Issue) *Issue {
 }
 
 // Create an issue
-func (t *Github) Create(i *Issue) *Issue {
+func (t *Github) Create(i *messages.Issue) *messages.Issue {
 	// TODO default label must be provided
 	ir := github.IssueRequest{
 		Title:  &i.Title,
@@ -96,7 +96,7 @@ func (t *Github) Create(i *Issue) *Issue {
 		Labels: &[]string{"created"},
 	}
 
-	gi, _, err := t.client.Issues.Create(i.Owner, i.Repo, &ir)
+	gi, _, err := t.client.Issues.Create(i.Org, i.Repo, &ir)
 	if err != nil {
 		log.Println(err)
 		return nil
