@@ -89,7 +89,7 @@ func (t *Github) Details(i *messages.Issue) *Issue {
 
 // Create an issue
 func (t *Github) Create(i *messages.Issue) *messages.Issue {
-	// TODO default label must be provided
+	// TODO default label must be provided instead of hardcoded
 	ir := github.IssueRequest{
 		Title:  &i.Title,
 		Body:   &i.Body,
