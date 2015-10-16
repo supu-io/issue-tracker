@@ -80,7 +80,7 @@ func TestIssuesService_Update(t *testing.T) {
 	})
 
 	g := Github{client: client}
-	issue := Issue{Owner: "o", Repo: "r", Number: 1, Status: "doing"}
+	issue := messages.Issue{Org: "o", Repo: "r", Number: 1, Status: "doing"}
 	labels := g.Update(&issue)
 
 	if len(labels) != 1 {

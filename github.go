@@ -109,14 +109,14 @@ func (t *Github) Create(i *messages.Issue) *messages.Issue {
 }
 
 // Update an issue by id
-func (t *Github) Update(i *Issue) []string {
+func (t *Github) Update(i *messages.Issue) []string {
 	for _, status := range t.Labels {
-		_, err := t.client.Issues.RemoveLabelForIssue(i.Owner, i.Repo, i.Number, status)
+		_, err := t.client.Issues.RemoveLabelForIssue(i.Org, i.Repo, i.Number, status)
 		if err != nil {
 			println(err.Error())
 		}
 	}
-	labels, _, _ := t.client.Issues.AddLabelsToIssue(i.Owner, i.Repo, i.Number, []string{i.Status})
+	labels, _, _ := t.client.Issues.AddLabelsToIssue(i.Org, i.Repo, i.Number, []string{i.Status})
 	ls := make([]string, len(labels))
 	for index, label := range labels {
 		ls[index] = *label.Name

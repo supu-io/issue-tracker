@@ -34,8 +34,8 @@ func (s *Subscriber) Subscribe() {
 	})
 
 	nc.Subscribe("issues.update", func(m *nats.Msg) {
-		issues := s.issuesUpdate(m.Data)
-		nc.Publish(m.Reply, *issues.toJSON())
+		res := s.issuesUpdate(m.Data)
+		nc.Publish(m.Reply, *ToJSON(res))
 	})
 
 	nc.Subscribe("issues.create", func(m *nats.Msg) {
@@ -89,19 +89,16 @@ func (s *Subscriber) issuesCreate(body []byte) *messages.Issue {
 	return g.Create(issue)
 }
 
-func (s *Subscriber) issuesUpdate(body []byte) *Issue {
-	input := IssuesDetails{}
+func (s *Subscriber) issuesUpdate(body []byte) *messages.Issue {
+	input := messages.UpdateIssue{}
 	err := json.Unmarshal(body, &input)
 	if err != nil {
 		log.Println(err)
 	}
+	g := getAdapter(input.Config)
+	g.Update(input.Issue)
 
-	g := input.Config.Github
-	g.setup()
-	issue := input.toIssue()
-	g.Update(issue)
-
-	return issue
+	return input.Issue
 }
 
 func (s *Subscriber) setup(nc *nats.Conn, m *nats.Msg) {

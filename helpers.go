@@ -5,6 +5,7 @@ import (
 	"log"
 )
 
+// ToJSON Represents an object as json
 func ToJSON(i interface{}) *[]byte {
 	json, err := json.Marshal(i)
 	if err != nil {
